@@ -1,11 +1,12 @@
-// @desc Register a new user
-// @route /api/users
-// @access {auth, token to acces route, public}
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const User = require("../models/userModel");
+
+// @desc Register a new user
+// @route /api/users
+// @access {auth, token to acces route, public}
 
 const registerUser = asyncHandler(async (req, res) => {
   // const registerUser = (req, res) => {
@@ -84,15 +85,35 @@ const loginUser = asyncHandler(async (req, res) => {
   // res.send("login route");
 });
 
+// @desc get current user
+// @route /api/users/me
+// @access private_access
+
+const getMe = asyncHandler(async (req, res) => {
+  // res.send("me");
+
+  //show only user id, user email and user name
+
+const user = {
+  id: req.user._id,
+  email: req.user.email,
+  name: req.user.name
+}
+
+
+  res.status(200).json(user)
+});
+
 // generate token
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d'
+    expiresIn: "30d",
   });
 };
 
 module.exports = {
   registerUser,
   loginUser,
+  getMe,
 };
