@@ -2,10 +2,12 @@
 import React from "react";
 import { useState } from "react";
 import { FaUserAlt } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import { register } from "../../features/Auth/authSlice";
 
 //import toast notifications
 
-import {toast} from 'react-toastify'
+import { toast } from "react-toastify";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -19,6 +21,31 @@ function Register() {
 
   const { name, email, password, password2 } = formData;
 
+  const dispatch = useDispatch();
+
+  const { user, isError, isSuccess, isLoading, message} = useSelector(state => state.auth)
+
+  //docs
+
+  //https://redux.js.org/tutorials/fundamentals/part-5-ui-react#dispatching-actions-with-usedispatch
+
+  //   const Header = () => {
+  //   const [text, setText] = useState('')
+  //   const dispatch = useDispatch()
+
+  //   const handleChange = e => setText(e.target.value)
+
+  //   const handleKeyDown = e => {
+  //     const trimmedText = e.target.value.trim()
+  //     // If the user pressed the Enter key:
+  //     if (e.key === 'Enter' && trimmedText) {
+  //       // Dispatch the "todo added" action with this text
+  //       dispatch({ type: 'todos/todoAdded', payload: trimmedText })
+  //       // And clear out the text input
+  //       setText('')
+  //     }
+  //   }
+
   //onChange event
 
   const onChange = (event) => {
@@ -30,19 +57,29 @@ function Register() {
   };
 
   const onSubmit = (event) => {
-      event.preventDefault()
+    event.preventDefault();
 
-      if (password !== password2) {
-          toast.error('passwords dont match!')
+    if (password !== password2) {
+      toast.error("passwords dont match!");
+    } else {
+        const userData = {
+            name,
+            email,
+            password
+        }
 
-      }
-  }
+        //pass in userdata from register in authSlice
+            dispatch(register(userData));
+    }
+
+
+  };
 
   return (
     <>
       <section className="heading">
         <h1>
-          <FaUserAlt /> Register
+          <FaUserAlt /> Register {user}
         </h1>
 
         <p>Please create account</p>
@@ -91,7 +128,7 @@ function Register() {
 
           <div className="form-group">
             <input
-              type="password2"
+              type="password"
               className="form-control"
               id="password2"
               value={password2}

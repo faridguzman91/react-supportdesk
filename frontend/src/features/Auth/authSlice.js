@@ -1,4 +1,7 @@
+/* eslint-disable no-undef */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
+import authService from "./authService";
 
 //initial states
 
@@ -39,6 +42,45 @@ const initialState = {
   message: "",
 };
 
+//pass in user form, and thunk API
+
+//register new userss
+
+//try catch return
+
+export const register = createAsyncThunk(
+  "auth/register",
+  async (user, thunkAPI) => {
+    // console.log(user)
+
+    try {
+      return await authService.register(user);
+    } catch (error) {
+      //look for error messages in:
+      //call error when errors in requesting
+
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      // rejectWithValue: a utility that helps customize the contents of a rejected action if the thunk receives an error.
+
+      //state.message = payload: rejectWithValue(message)
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+//login users
+
+export const login = createAsyncThunk("auth/login", async (user, thunkAPI) => {
+  // console.log(user)
+});
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -46,7 +88,32 @@ export const authSlice = createSlice({
 
   //how to change state when registering is done
 
-  extraReducers: (builder) => {},
+  //catch Actions whenever they happen
+
+  //docs
+
+  //https://redux-toolkit.js.org/api/createslice#the-extrareducers-builder-callback-notation
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(register.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError =  true;
+        //user state went wrong, default 
+        //reject with value
+        state.message = action.payload
+        state.user = null;
+      });
+
+  },
 });
 
 export default authSlice.reducer;

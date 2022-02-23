@@ -2,6 +2,8 @@
 import React from "react";
 import { useState } from "react";
 import { FaSignInAlt } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import { login } from "../../features/Auth/authSlice";
 
 //import toast notifications
 
@@ -17,6 +19,13 @@ function Login() {
 
   const { email, password } = formData;
 
+  
+  const dispatch = useDispatch();
+
+  const { user, isError, isSuccess, isLoading, message } = useSelector(
+    (state) => state.auth
+  );
+
   //onChange event
 
   const onChange = (event) => {
@@ -29,6 +38,13 @@ function Login() {
 
   const onSubmit = (event) => {
     event.preventDefault();
+
+    const userData = {
+        email,
+        password
+    }
+
+    dispatch(login(userData))
 
     // if (password !== password2) {
     //   toast.error("passwords dont match!");
