@@ -84,7 +84,16 @@ export const login = createAsyncThunk("auth/login", async (user, thunkAPI) => {
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+
+  //create reset for auth
+  reducers: {
+    reset: (state) => {
+      state.isLoading = false;
+      state.isError = false;
+      state.isSuccess = false;
+      state.message = "";
+    },
+  },
 
   //how to change state when registering is done
 
@@ -106,14 +115,16 @@ export const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
-        state.isError =  true;
-        //user state went wrong, default 
+        state.isError = true;
+        //user state went wrong, default
         //reject with value
-        state.message = action.payload
+        state.message = action.payload;
         state.user = null;
       });
-
   },
 });
+
+//when you create an action , export is as actions
+export const { reset } = authSlice.actions;
 
 export default authSlice.reducer;

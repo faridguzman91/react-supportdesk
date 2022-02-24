@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaUserAlt } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-import { register } from "../../features/Auth/authSlice";
+import { register, reset } from "../../features/Auth/authSlice";
 
 //import toast notifications
 
@@ -22,8 +23,11 @@ function Register() {
   const { name, email, password, password2 } = formData;
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { user, isError, isSuccess, isLoading, message} = useSelector(state => state.auth)
+  const { user, isError, isSuccess, isLoading, message } = useSelector(
+    (state) => state.auth
+  );
 
   //docs
 
@@ -48,6 +52,21 @@ function Register() {
 
   //onChange event
 
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    //redirect to login
+    if (isSuccess || user) {
+      navigate("/");
+    }
+
+    dispatch(reset());
+
+    //FIX MEMORY LEAK AFTER  RERENDER
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isError, isSuccess, user, message, navigate, dispatch]);
+
   const onChange = (event) => {
     setFormData((prevState) => ({
       //spread prevState
@@ -60,19 +79,17 @@ function Register() {
     event.preventDefault();
 
     if (password !== password2) {
-      toast.error("passwords dont match!");
+      toast.error("Passwords dont match!");
     } else {
-        const userData = {
-            name,
-            email,
-            password
-        }
+      const userData = {
+        name,
+        email,
+        password,
+      };
 
-        //pass in userdata from register in authSlice
-            dispatch(register(userData));
+      //pass in userdata from register in authSlice
+      dispatch(register(userData));
     }
-
-
   };
 
   return (
