@@ -44,9 +44,9 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    res.status(201).json({
+    res.json({
       _id: user._id,
-      naame: user.name,
+      name: user.name,
       email: user.email,
       token: generateToken(user._id),
     });
@@ -74,13 +74,13 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
       _id: user._id,
-      naame: user.name,
+      name: user.name,
       email: user.email,
       token: generateToken(user._id),
     });
   } else {
     res.status(401);
-    throw new Error("Invalid credentials");
+    throw new Error("Invalid credentials/info");
   }
   // res.send("login route");
 });

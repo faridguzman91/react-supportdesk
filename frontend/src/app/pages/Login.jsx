@@ -1,9 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-import { useState } from "react";
+// import { toast } from "react-toastify";
+import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from "react";
 import { FaSignInAlt } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-import { login } from "../../features/Auth/authSlice";
+import { login , reset} from "../../features/Auth/authSlice";
+import Spinner from "../../components/Spinner";
 
 //import toast notifications
 
@@ -20,13 +23,39 @@ function Login() {
   const { email, password } = formData;
 
   
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const { user, isError, isSuccess, isLoading, message } = useSelector(
     (state) => state.auth
   );
 
+  //check for error, if there is (toastify) , clean memory 
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    // redirect to login
+    //isSucces true / user filled form true
+
+    //this is not redirecting after register
+
+    if (isSuccess || user) {
+      navigate("/");
+    }
+
+    //dispatch reset from slice
+
+    dispatch(reset());
+
+    //FIX MEMORY LEAK AFTER  RERENDER
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isError, isSuccess, user, message, navigate, dispatch]);
+
   //onChange event
+
+
 
   const onChange = (event) => {
     setFormData((prevState) => ({
@@ -50,6 +79,10 @@ function Login() {
     //   toast.error("passwords dont match!");
     // }
   };
+
+  if (isLoading) {
+    return <Spinner />
+  }
 
   return (
     <>

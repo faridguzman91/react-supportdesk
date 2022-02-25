@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUserAlt } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { register, reset } from "../../features/Auth/authSlice";
+import Spinner from "../../components/Spinner";
 
 //import toast notifications
 
@@ -56,10 +57,17 @@ function Register() {
     if (isError) {
       toast.error(message);
     }
-    //redirect to login
+
+    // redirect to login
+    //isSucces true / user filled form true
+
+    //this is not redirecting after register
+
     if (isSuccess || user) {
-      navigate("/");
+      navigate('/');
     }
+
+    //dispatch reset from slice
 
     dispatch(reset());
 
@@ -71,7 +79,7 @@ function Register() {
     setFormData((prevState) => ({
       //spread prevState
       ...prevState,
-      [event.target.id]: event.target.value,
+      [event.target.name]: event.target.value,
     }));
   };
 
@@ -92,11 +100,15 @@ function Register() {
     }
   };
 
+  if(isLoading) {
+    return <Spinner />
+  }
+
   return (
     <>
       <section className="heading">
         <h1>
-          <FaUserAlt /> Register {user}
+          <FaUserAlt /> Register
         </h1>
 
         <p>Please create account</p>
