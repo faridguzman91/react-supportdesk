@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { getTickets, createTicket } = require("../controllers/ticketController");
+const { getTickets, createTicket, getTicket } = require("../controllers/ticketController");
 
 
 const { protect } = require("../middleware/authMiddleware.js");
 
 router.route("/").get(protect, getTickets).post(protect, createTicket);
+
+router.route('/:id').get(protect, getTicket)
 
 module.exports = router;

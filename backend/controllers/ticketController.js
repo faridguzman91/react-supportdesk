@@ -8,7 +8,20 @@ const Ticket = require("../models/ticketModel");
 // @access private_access
 
 const getTickets = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "getTickets" });
+  // get users using ID in jsonwebtokens
+
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  //get ticket
+
+  const tickets = await Ticket.find({ user: req.user.id });
+
+  res.status(200).json(tickets);
 });
 
 // @desc Create tickets
@@ -16,10 +29,71 @@ const getTickets = asyncHandler(async (req, res) => {
 // @access private_access
 
 const createTicket = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "createTickets" });
+  //send body data
+
+  const { product, description } = req.body;
+
+  if (!product || !description) {
+    res.status(400);
+    throw new Error("please add product and description");
+  }
+
+  // get users using ID in jsonwebtokens
+
+  const user = await User.find(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  const ticket = await Ticket.create({
+      product,
+      description,
+      user: req.user.id,
+      status: 'new'
+  })
+
+  //created msg
+
+  res.status(201).json(ticket);
+});
+
+//get user tickets
+
+// @desc Get user tickets
+// @route POST /api/tickets/:id
+// @access private_access
+
+const getTicket = asyncHandler(async (req, res) => {
+  // get users using ID in jsonwebtokens
+
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  //get ticket
+
+  const ticket = await Ticket.findById(req.params.id);
+
+  if(!ticket) {
+      res.status(404)
+      throw new Error('Ticket not found')
+  }
+
+  if(ticket.user.toString() !== req.user.id) {
+      res.status(401)
+      throw new Error('not authorized')
+  }
+
+  res.status(200).json(tickets);
 });
 
 module.exports = {
   getTickets,
   createTicket,
+  getTicket,
 };
