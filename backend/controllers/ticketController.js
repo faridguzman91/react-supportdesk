@@ -30,6 +30,7 @@ const getTickets = asyncHandler(async (req, res) => {
 
 const createTicket = asyncHandler(async (req, res) => {
   //send body data
+  //send product & description
 
   const { product, description } = req.body;
 
@@ -40,7 +41,7 @@ const createTicket = asyncHandler(async (req, res) => {
 
   // get users using ID in jsonwebtokens
 
-  const user = await User.find(req.user.id);
+  const user = await User.findById(req.user.id);
 
   if (!user) {
     res.status(401);
@@ -48,11 +49,11 @@ const createTicket = asyncHandler(async (req, res) => {
   }
 
   const ticket = await Ticket.create({
-      product,
-      description,
-      user: req.user.id,
-      status: 'new'
-  })
+    product,
+    description,
+    user: req.user.id,
+    status: "new",
+  });
 
   //created msg
 
@@ -79,21 +80,95 @@ const getTicket = asyncHandler(async (req, res) => {
 
   const ticket = await Ticket.findById(req.params.id);
 
-  if(!ticket) {
-      res.status(404)
-      throw new Error('Ticket not found')
+  if (!ticket) {
+    res.status(404);
+    throw new Error("Ticket not found");
   }
 
-  if(ticket.user.toString() !== req.user.id) {
-      res.status(401)
-      throw new Error('not authorized')
+  if (ticket.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error("not authorized");
   }
 
-  res.status(200).json(tickets);
+  res.status(200).json(ticket);
+});
+
+// @desc Delete tickets
+// @route DELETE /api/tickets/:id
+// @access private_access
+
+const deleteTicket = asyncHandler(async (req, res) => {
+  // get users using ID in jsonwebtokens
+
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  //delete ticket
+
+  const ticket = await Ticket.findById(req.params.id);
+
+  if (!ticket) {
+    res.status(404);
+    throw new Error("Ticket not found");
+  }
+
+  if (ticket.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error("not authorized");
+  }
+
+  await ticket.remove();
+
+  res.status(200).json({ success: true });
+});
+
+// @desc Update tickets
+// @route PUT /api/tickets/:id
+// @access private_access
+
+const updateTicket = asyncHandler(async (req, res) => {
+  // get users using ID in jsonwebtokens
+
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  //check ticket
+
+  const ticket = await Ticket.findById(req.params.id);
+
+  if (!ticket) {
+    res.status(404);
+    throw new Error("Ticket not found");
+  }
+
+  if (ticket.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error("not authorized");
+  }
+
+  // await ticket.remove();
+
+  const updateTicket = await Ticket.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+
+  res.status(200).json(updateTicket);
 });
 
 module.exports = {
   getTickets,
   createTicket,
   getTicket,
+  updateTicket,
+  deleteTicket,
 };
