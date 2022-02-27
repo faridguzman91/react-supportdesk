@@ -159,6 +159,25 @@ h3 {
     text-align: center;
 }
 
+.ticket-page {
+    position: relative;
+    text-align: left;
+}
+
+.ticket-header {
+    position: relative;
+    text-align: left;
+}
+
+.ticket-desc {
+    margin: 20px 0;
+    font-size: 17px;
+    background-color: #f4f4f4;
+    border: 1px #ccc solid;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
 .status {
     background-color: #333;
     color: #fff;
