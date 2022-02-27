@@ -139,3 +139,33 @@ h3 {
     background: #fff;
     color: #000;
 }
+
+.btn-sm {
+    padding: 5px 15px;
+    font-size: 13px;
+}
+
+.ticket,
+.ticket-headings {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #f4f4f4;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.status {
+    background-color: #333;
+    color: #fff;
+    width: 100px;
+    padding: 0 20px;
+    justify-self: center;
+    border-radius: 10px;
+    font-size: 16px;
+    text-align: center;
+}

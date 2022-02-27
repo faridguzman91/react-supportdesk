@@ -64,7 +64,7 @@ function Register() {
     //this is not redirecting after register
 
     if (isSuccess || user) {
-      navigate('/');
+      navigate("/");
     }
 
     //dispatch reset from slice
@@ -100,8 +100,8 @@ function Register() {
     }
   };
 
-  if(isLoading) {
-    return <Spinner />
+  if (isLoading) {
+    return <Spinner />;
   }
 
   return (
