@@ -2,13 +2,21 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getTicket, reset, closeTicket } from "../../features/tickets/ticketSlice";
+import { getTicket, closeTicket } from "../../features/tickets/ticketSlice";
+// eslint-disable-next-line no-unused-vars
+import { getNotes, reset as notesReset } from "../../features/notes/noteSlice";
 import BackButton from "../../components/BackButton";
 import Spinner from "../../components/Spinner";
+import NoteItem from '../../components/NoteItem'
 
 function Ticket() {
+  // eslint-disable-next-line no-unused-vars
   const { ticket, isLoading, isSuccess, isError, message } = useSelector(
     (state) => state.tickets
+  );
+
+  const { notes, isLoading: notesIsloading } = useSelector(
+    (state) => state.notes
   );
 
   const params = useParams();
@@ -16,7 +24,6 @@ function Ticket() {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-
 
   const { ticketId } = params;
 
@@ -26,6 +33,7 @@ function Ticket() {
     }
 
     dispatch(getTicket(ticketId));
+    dispatch(getNotes(ticketId));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isError, message, ticketId]);
 
@@ -39,10 +47,14 @@ function Ticket() {
 
   //close ticket
   const onTicketClose = () => {
-      dispatch(closeTicket(ticket))
-      toast.success('Ticket Closed')
-      navigate('/tickets')
+    dispatch(closeTicket(ticket));
+    toast.success("Ticket Closed");
+    navigate("/tickets");
   };
+
+  if (isLoading || notesIsloading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="ticket-page">
@@ -59,9 +71,7 @@ function Ticket() {
           Date submitted: {new Date(ticket.createdAt).toLocaleString("en-US")}
         </h3>
 
-        <h3>
-            Product: {ticket.product}
-        </h3>
+        <h3>Product: {ticket.product}</h3>
 
         <hr />
         <div className="ticket-desc">
@@ -69,11 +79,16 @@ function Ticket() {
           <p>{ticket.description}</p>
         </div>
         {/*notes */}
-
       </header>
 
-      {ticket.status !== 'closed' && (
-          <button className="btn btn-block btn-danger" onClick={onTicketClose}>Close Ticket</button>
+      {notes.map((note) => (
+        <NoteItem key={note._id} note={note}/>
+      ))}
+
+      {ticket.status !== "closed" && (
+        <button className="btn btn-block btn-danger" onClick={onTicketClose}>
+          Close Ticket
+        </button>
       )}
     </div>
   );
